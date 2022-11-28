@@ -1,13 +1,3 @@
-<?php
-
-
-include('dbcon.php');
-
-
-?>
-
-
-
 <!DOCTYPE html>
 <html lang=en dir=ltr class=CMgTXc>
 <meta charset=utf-8>

