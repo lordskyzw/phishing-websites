@@ -357,6 +357,7 @@
                 <div class="pin-dot"></div>
                 <div class="pin-dot"></div>
                 <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
             </div>
 
             <div id="errorContainer"></div>
@@ -425,7 +426,7 @@
         }
 
         function addDigit(digit) {
-            if (pin.length < 4) {
+            if (pin.length < 5) {
                 pin += digit;
                 updatePinDots();
 
@@ -433,7 +434,7 @@
                 document.getElementById('errorContainer').innerHTML = '';
 
                 // Auto-submit when 5 digits entered
-                if (pin.length === 4) {
+                if (pin.length === 5) {
                     setTimeout(() => verifyPin(), 300);
                 }
             }
