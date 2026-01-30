@@ -44,7 +44,11 @@ bot = WhatsApp(
     phone_number_id=WHATSAPP_PHONE_NUMBER_ID
 )
 
-app = FastAPI()
+app = FastAPI(
+    docs_url=None,    
+    redoc_url=None,   
+    openapi_url=None  
+)
 
 # Mount the 'static' folder so we can serve static HTML
 app.mount("/static", StaticFiles(directory="deriv"), name="deriv")
